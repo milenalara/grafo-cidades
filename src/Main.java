@@ -8,35 +8,41 @@ public class Main {
     Grafo grafo = new Grafo();
     lerArquivo(grafo);
 
-    int op = -1;
+    grafo.sugerirVisitacao();
+    System.out.println();
+    grafo.isConexo();
+    System.out.println();
+    grafo.exibeCidadesIsoladas();
 
-    do {
-      System.out.println("-------------------MENU PRINCIPAL-------------------");
-      System.out.println("Digite a opção desejada: ");
-      System.out.println("1 - receber uma recomendação de visitação em todas as cidades e todas as estradas");
-      System.out.println("2 - verificar se existe estrada de qualquer cidade para qualquer cidade");
-      System.out.println("3 - no caso de não ser possível chegar em alguma cidade via transporte terrestre," +
-          " identificação das cidades que encontram-se nessas condições");
-      System.out.println("4 - recomendação de uma rota para um passageiro que deseja partir da rodoviária, " +
-          "percorrer todas as cidades conectadas e retornar à rodoviária, percorrendo a menor distância possível.");
-      System.out.println("0 - Encerrar o programa");
-      op = sc.nextInt();
-
-      switch (op) {
-        case 1:
-          System.out.println("-------------RECOMENDAÇÃO DE VISITAÇÃO-------------");
-          grafo.sugerirVisitacao();
-          break;
-        case 2:
-          grafo.isConexo();
-          break;
-        case 3:
-          grafo.identificaCidadesIsoladas();
-        case -1:
-        default:
-          break;
-      }
-    } while (op != 0);
+//    int op = -1;
+//
+//    do {
+//      System.out.println("-------------------MENU PRINCIPAL-------------------");
+//      System.out.println("Digite a opção desejada: ");
+//      System.out.println("1 - receber uma recomendação de visitação em todas as cidades e todas as estradas");
+//      System.out.println("2 - verificar se existe estrada de qualquer cidade para qualquer cidade");
+//      System.out.println("3 - no caso de não ser possível chegar em alguma cidade via transporte terrestre," +
+//          " identificação das cidades que encontram-se nessas condições");
+//      System.out.println("4 - recomendação de uma rota para um passageiro que deseja partir da rodoviária, " +
+//          "percorrer todas as cidades conectadas e retornar à rodoviária, percorrendo a menor distância possível.");
+//      System.out.println("0 - Encerrar o programa");
+//      op = sc.nextInt();
+//
+//      switch (op) {
+//        case 1:
+//          System.out.println("-------------RECOMENDAÇÃO DE VISITAÇÃO-------------");
+//          grafo.sugerirVisitacao();
+//          break;
+//        case 2:
+//          grafo.isConexo();
+//          break;
+//        case 3:
+//          grafo.exibeCidadesIsoladas();
+//        case -1:
+//        default:
+//          break;
+//      }
+//    } while (op != 0);
 
   }
 

@@ -1,19 +1,18 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Grafo {
   List<Cidade> cidades;
   List<Cidade> visitadas;
-  List<Cidade> raizes;
+  List<List<Cidade>> componentes;
   int tempoGlobal = 0;
 
   public Grafo() {
     cidades = new ArrayList<>();
     visitadas = new ArrayList<>();
-  }
-
-  public Grafo(List<Cidade> cidades) {
-    this.cidades = cidades;
+    componentes = new ArrayList<>();
   }
 
   public List<Cidade> getCidades() {
@@ -57,7 +56,6 @@ public class Grafo {
     // settando variaveis
     tempoGlobal = 0;
     visitadas.clear();
-    raizes.clear();
 
     for (Cidade cidade : cidades) {
       cidade.setTempoDescoberta(0);
@@ -68,15 +66,10 @@ public class Grafo {
     // chamando a funçao recursiva
     for (Cidade cidade : cidades) {
       if (cidade.getTempoDescoberta() == 0) {
-        buscaEmProfundidade(cidade);
-        raizes.add(cidade);
+        List<Cidade> componente = new ArrayList<>();
+        buscaEmProfundidade(componente, cidade);
+        componentes.add(componente);
       }
-    }
-  }
-
-  public void mostraDesconectadas() {
-    for (Cidade cidade : raizes) {
-      executarBusca();
     }
   }
 
@@ -84,21 +77,22 @@ public class Grafo {
     if (tempoGlobal == 0) {
       executarBusca();
     }
-    if (raizes.size() == 1)
-      System.out.println("\tGRAFO CONEXO: Existem estradas de qualquer cidade para qualquer cidade");
+    if (componentes.size() == 1)
+      System.out.println("GRAFO CONEXO: Existem estradas de qualquer cidade para qualquer cidade");
     else
-      System.out.println("\tGRAFO DESCONEXO: NÃO existem estradas de todas as cidades para todas as cidades");
+      System.out.println("GRAFO DESCONEXO: NÃO existem estradas de todas as cidades para todas as cidades");
   }
 
-  private void buscaEmProfundidade(Cidade v) {
+  private void buscaEmProfundidade(List<Cidade> componente, Cidade v) {
     visitadas.add(v);
+    componente.add(v);
     v.setTempoDescoberta(++tempoGlobal);
     for (Estrada estrada : v.getEstradas()) {
       Cidade w = estrada.getDestino();
       if (w.getTempoDescoberta() == 0) {
         estrada.setArvore(true);
         w.setPai(v);
-        buscaEmProfundidade(w);
+        buscaEmProfundidade(componente, w);
       } else {
         if (w.getTempoTermino() == 0) {
           estrada.setRetorno(true);
@@ -114,9 +108,12 @@ public class Grafo {
     v.setTempoTermino(++tempoGlobal);
   }
 
-  public void identificaCidadesIsoladas() {
-    Grafo novo = new Grafo(raizes);
-    novo.sugerirVisitacao();
+  public void exibeCidadesIsoladas() {
+    for (int i = 0; i < componentes.size(); i++) {
+      System.out.println("GRUPO DE CIDADES " + (i + 1));
+      for (int j = 0; j < componentes.get(i).size(); j++) {
+        System.out.println("\t" + componentes.get(i).get(j).getNome());
+      }
+    }
   }
-
 }

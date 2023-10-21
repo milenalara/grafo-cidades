@@ -2,14 +2,18 @@ public class Estrada {
   private Cidade destino;
   private int distancia;
 
-  private boolean arvore = false;
-  private boolean retorno = false;
-  private boolean avanco = false;
-  private boolean cruzamento = false;
+  private boolean arvore;
+  private boolean retorno;
+  private boolean avanco;
+  private boolean cruzamento;
 
   public Estrada(Cidade destino, int distancia) {
     this.destino = destino;
     this.distancia = distancia;
+    this.arvore = false;
+    this.retorno = false;
+    this.avanco = false;
+    this.cruzamento = false;
   }
 
   public Cidade getDestino() {
