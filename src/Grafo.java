@@ -3,27 +3,29 @@ import java.util.List;
 
 public class Grafo {
   List<Cidade> cidades;
-  List<Estrada> estradas;
+  List<Cidade> visitadas;
+  List<Cidade> raizes;
+  int tempoGlobal = 0;
 
   public Grafo() {
     cidades = new ArrayList<>();
-    estradas = new ArrayList<>();
+    visitadas = new ArrayList<>();
+  }
+
+  public Grafo(List<Cidade> cidades) {
+    this.cidades = cidades;
   }
 
   public List<Cidade> getCidades() {
     return cidades;
   }
 
-  public List<Estrada> getEstradas() {
-    return estradas;
-  }
-
-  public Cidade addCidade(String nomeCidade) {
-    Cidade nova = new Cidade(nomeCidade);
+  public Cidade addCidade(String nome) {
+    Cidade nova = new Cidade(nome);
     if (!verificaCidade(nova)) {
-      cidades.add(nova);
+      cidades.add(nova); // adiciona a cidade na lista se ela não existir
     }
-    return nova;
+    return nova; // retorna a cidade criada ou encontrada na lista
   }
 
   public Cidade getCidadeByNome(String nome) {
@@ -32,15 +34,7 @@ public class Grafo {
         return cidade;
       }
     }
-    return null; // Return null if no matching city is found
-  }
-
-  public Estrada addEstrada(Cidade origem, Cidade destino, int distancia) {
-    Estrada nova = new Estrada(origem, destino, distancia);
-    if (!verificaEstrada(nova)) {
-      estradas.add(nova);
-    }
-    return nova;
+    return null; // retorna nulo se não existir a cidade na lista
   }
 
   private boolean verificaCidade(Cidade c) {
@@ -52,30 +46,77 @@ public class Grafo {
     return false;
   }
 
-  private boolean verificaEstrada(Estrada e) {
-    for (Estrada estrada : estradas) {
-      if ((estrada.getOrigem().getNome().equals(e.getOrigem().getNome()) && estrada.getDestino().getNome().equals(e.getDestino().getNome()))
-          || (estrada.getOrigem().getNome().equals(e.getDestino().getNome()) && estrada.getDestino().getNome().equals(e.getOrigem().getNome()))
-      ) {
-        return true;
+  public void sugerirVisitacao() {
+    executarBusca();
+    for (Cidade cidade : visitadas) {
+      System.out.println(cidade.getNome());
+    }
+  }
+
+  private void executarBusca() {
+    // settando variaveis
+    tempoGlobal = 0;
+    visitadas.clear();
+    raizes.clear();
+
+    for (Cidade cidade : cidades) {
+      cidade.setTempoDescoberta(0);
+      cidade.setTempoTermino(0);
+      cidade.setPai(null);
+    }
+
+    // chamando a funçao recursiva
+    for (Cidade cidade : cidades) {
+      if (cidade.getTempoDescoberta() == 0) {
+        buscaEmProfundidade(cidade);
+        raizes.add(cidade);
       }
     }
-    return false;
   }
 
+  public void mostraDesconectadas() {
+    for (Cidade cidade : raizes) {
+      executarBusca();
+    }
+  }
 
-  public Estrada getEstrada(Cidade origem, Cidade destino) {
-    for (Estrada estrada : estradas) {
-      if (estrada.getOrigem().getNome().equals(origem.getNome()) && estrada.getDestino().getNome().equals(destino.getNome())) {
-        return estrada;
+  public void isConexo() {
+    if (tempoGlobal == 0) {
+      executarBusca();
+    }
+    if (raizes.size() == 1)
+      System.out.println("\tGRAFO CONEXO: Existem estradas de qualquer cidade para qualquer cidade");
+    else
+      System.out.println("\tGRAFO DESCONEXO: NÃO existem estradas de todas as cidades para todas as cidades");
+  }
+
+  private void buscaEmProfundidade(Cidade v) {
+    visitadas.add(v);
+    v.setTempoDescoberta(++tempoGlobal);
+    for (Estrada estrada : v.getEstradas()) {
+      Cidade w = estrada.getDestino();
+      if (w.getTempoDescoberta() == 0) {
+        estrada.setArvore(true);
+        w.setPai(v);
+        buscaEmProfundidade(w);
+      } else {
+        if (w.getTempoTermino() == 0) {
+          estrada.setRetorno(true);
+        } else {
+          if (v.getTempoDescoberta() < w.getTempoDescoberta()) {
+            estrada.setAvanco(true);
+          } else {
+            estrada.setCruzamento(true);
+          }
+        }
       }
     }
-    return null;
+    v.setTempoTermino(++tempoGlobal);
   }
 
-  public void printAllEstradas() {
-    for (Estrada estrada : estradas) {
-      System.out.println("origem: " + estrada.getOrigem().getNome() + ", destino: " + estrada.getDestino().getNome() + ", distancia: " + estrada.getDistancia()+ " km");
-    }
+  public void identificaCidadesIsoladas() {
+    Grafo novo = new Grafo(raizes);
+    novo.sugerirVisitacao();
   }
+
 }

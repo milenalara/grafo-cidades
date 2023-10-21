@@ -4,15 +4,40 @@ import java.util.Scanner;
 
 public class Main {
   public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
     Grafo grafo = new Grafo();
     lerArquivo(grafo);
 
-    for (Cidade cidade : grafo.getCidades()) {
-      System.out.println("origem: " + cidade.getNome());
-      for (Cidade destino : cidade.getDestinos()) {
-        System.out.println("\tdestino: " + destino.getNome() + "\tdistancia: ");
+    int op = -1;
+
+    do {
+      System.out.println("-------------------MENU PRINCIPAL-------------------");
+      System.out.println("Digite a opção desejada: ");
+      System.out.println("1 - receber uma recomendação de visitação em todas as cidades e todas as estradas");
+      System.out.println("2 - verificar se existe estrada de qualquer cidade para qualquer cidade");
+      System.out.println("3 - no caso de não ser possível chegar em alguma cidade via transporte terrestre," +
+          " identificação das cidades que encontram-se nessas condições");
+      System.out.println("4 - recomendação de uma rota para um passageiro que deseja partir da rodoviária, " +
+          "percorrer todas as cidades conectadas e retornar à rodoviária, percorrendo a menor distância possível.");
+      System.out.println("0 - Encerrar o programa");
+      op = sc.nextInt();
+
+      switch (op) {
+        case 1:
+          System.out.println("-------------RECOMENDAÇÃO DE VISITAÇÃO-------------");
+          grafo.sugerirVisitacao();
+          break;
+        case 2:
+          grafo.isConexo();
+          break;
+        case 3:
+          grafo.identificaCidadesIsoladas();
+        case -1:
+        default:
+          break;
       }
-    }
+    } while (op != 0);
+
   }
 
   public static void lerArquivo(Grafo grafo) {
@@ -20,7 +45,7 @@ public class Main {
       File entrada = new File("entrada.txt");
       Scanner sc = new Scanner(entrada);
 
-      // Read and store cities first
+      // Cria as cidades primeiro
       while (sc.hasNextLine()) {
         String line = sc.nextLine();
         int indiceDoisPontos = line.indexOf(":");
@@ -30,11 +55,11 @@ public class Main {
         }
       }
 
-      // Reset the scanner to the beginning of the file
+      // Resetar o scanner para o início do arquivo
       sc.close();
       sc = new Scanner(entrada);
 
-      // Read connections and add them
+      // Ler e adicionar conexões
       while (sc.hasNextLine()) {
         String line = sc.nextLine();
         int indiceDoisPontos = line.indexOf(":");
@@ -54,14 +79,12 @@ public class Main {
               int distancia = Integer.parseInt(distanciaStr.replaceAll("[^0-9]", ""));
 
               Cidade destino = grafo.getCidadeByNome(cidadeDestino);
-              origem.addDestino(destino);
-              grafo.addEstrada(origem, destino, distancia);
+              origem.addDestino(destino, distancia);
             }
           }
         }
       }
 
-      sc.close();
     } catch (FileNotFoundException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();
